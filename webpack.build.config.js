@@ -1,12 +1,13 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
 const BabiliPlugin = require('babili-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 // Config directories
 const SRC_DIR = path.resolve(__dirname, 'src');
-const OUTPUT_DIR = path.resolve(__dirname, 'dist');
+const OUTPUT_DIR = path.resolve(__dirname, 'build');
 
 // Any directories you will be adding code/files into, need to be added to this array so webpack will pick them up
 const defaultInclude = [SRC_DIR];
@@ -22,11 +23,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'css-loader'
-        }),
-        include: defaultInclude
+        use: [{ loader: MiniCssExtractPlugin.loader }, "css-loader"]
       },
       {
         test: /\.jsx?$/,
@@ -48,7 +45,8 @@ module.exports = {
   target: 'electron-renderer',
   plugins: [
     new HtmlWebpackPlugin(),
-    new ExtractTextPlugin('bundle.css'),
+    new HtmlWebpackRootPlugin(),
+    new MiniCssExtractPlugin('bundle.css'),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
